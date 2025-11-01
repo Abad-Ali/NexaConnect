@@ -110,7 +110,7 @@ const CommentDialog = ({open, setOpen}) => {
                       </div>
                    </div>
                    <hr />
-                   <div className='h-[28vh] md:h-[30vh] scrollable overflow-y-auto px-4'>
+                   <div className='h-[25vh] md:h-[30vh] scrollable overflow-y-auto px-4'>
                       {
                         comment.map((comment)=> <Comment key={comment._id} comment={comment}/>)
                       }
