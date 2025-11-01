@@ -94,7 +94,7 @@ const Signup = () => {
                }
    
                <span className="text-right text-xs text-gray-300 font-serif">
-                   Already have an account? <a href="/login" className="underline text-blue-400 mr-3 font-bold font-serif">Login</a>
+               {"Already have an account?"} <a href="/login" className="underline text-blue-400 mr-3 font-bold font-serif">Login</a>
                </span>
            </form>
        </div>
