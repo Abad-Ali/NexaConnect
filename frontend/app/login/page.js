@@ -99,7 +99,7 @@ const Login = () => {
                }
    
                <span className="text-right text-xs text-gray-300 font-serif">
-                   Doesn't have a account? <a href="/signup" className="underline text-blue-400 mr-3 font-bold font-serif">Signup</a>
+               {"Doesn't have a account?"} <a href="/signup" className="underline text-blue-400 mr-3 font-bold font-serif">Signup</a>
                </span>
            </form>
        </div>
