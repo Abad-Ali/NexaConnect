@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOption = {
-  origin: 'http://localhost:3000',
+  origin: 'https://nexaconnect.vercel.app',
   credentials: true
 };
 app.use(cors(corsOption));
