@@ -1,0 +1,26 @@
+'use client';
+import { setSuggestedUsers } from '@/redux/authSlice';
+import axios from 'axios'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
+
+const useGetSuggestedUsers = () => {
+    const dispatch = useDispatch();
+  useEffect(()=>{
+    const fetchSuggestedUsers = async()=>{
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v2/user/suggested`, {withCredentials:true});
+            if(res.data.success){
+                dispatch(setSuggestedUsers(res.data.users));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    fetchSuggestedUsers();
+  },[]);
+};
+
+export default useGetSuggestedUsers;
