@@ -7,6 +7,7 @@ import {Loader2, SquareUserIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { toast } from 'sonner';
+import Image from "next/image";
 
 const Signup = () => {
 
@@ -58,7 +59,7 @@ const Signup = () => {
                 
            <form onSubmit={signupHandler} className='md:shadow-xs md:shadow-gray-600 bg-black flex flex-col gap-5 p-7 md:rounded-2xl text-white w-[90%] max-w-md'>
                <div>
-                   <img className='w-40 h-32 mx-auto mb-2' src="NexaConnect.png" alt="Logo"></img>
+                   <Image className='w-40 h-32 mx-auto mb-2' src="NexaConnect.png" alt="Logo"/>
                    <p className='text-2xl font-bold font-serif text-center '>Signup</p>
                    <p className='text-gray-300 text-center mt-2 font-serif italic'>Connect with friends and share your moments.</p>
                </div>
