@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = new Server(server,{
     cors:{
-        origin:'https://nexaconnect.vercel.app',
+        origin:['http://localhost:3000','https://nexaconnect.vercel.app'],
         methods:['GET', 'POST'],
         credentials: true
     }

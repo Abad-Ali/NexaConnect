@@ -218,7 +218,7 @@ const Profile = () => {
         <div className={`grid grid-cols-3 gap-2 my-5 ${displayedPosts.length >= 1 ? 'pb-20 md:pb-0' : ''}`}>
           {displayedPosts?.map(post => (
             <div key={post._id} className='relative group cursor-pointer rounded-sm overflow-hidden mb-5'>
-              <Image onClick={() => openDialog(post)} src={post.image} alt='postimage' className='rounded-sm w-full aspect-square object-cover' />
+              <Image onClick={() => openDialog(post)} src={post.image} alt='postimage' width={100} height={100} className='rounded-sm w-full aspect-square object-cover' />
               <div className='absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
                 <div className='flex items-center text-gray-200 space-x-4'>
                   <Button className='flex items-center gap-2 hover:text-slate-700 font-bold bg-transparent hover:bg-transparent'>

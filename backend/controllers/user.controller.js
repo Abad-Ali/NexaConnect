@@ -5,47 +5,114 @@ import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import { Post } from "../models/post.model.js";
 
-// REGISTER
-export const register = async(req,res)=>{
-    try {
-       const {username, email, password} = req.body;
+// // REGISTER
+// export const register = async(req,res)=>{
+//     try {
+//        const {username, email, password} = req.body;
 
-       if(!username || !email || !password){
-            return res.status(400).json({
-                message:"Something is missing, please check!",
-                success:false
-            });
-        };
+//        if(!username || !email || !password){
+//             return res.status(400).json({
+//                 message:"Something is missing, please check!",
+//                 success:false
+//             });
+//         };
 
-        const user = await User.findOne({email});
-        if(user){
-            return res.status(409).json({
-                message:"Email already in use. Try a different one.",
-                success:false
-            });
-        };
+//         const user = await User.findOne({email});
+//         if(user){
+//             return res.status(409).json({
+//                 message:"Email already in use. Try a different one.",
+//                 success:false
+//             });
+//         };
 
-        const hashedPassword = await bcrypt.hash(password, 12); // use bcrypt to hash password
+//         const hashedPassword = await bcrypt.hash(password, 12); // use bcrypt to hash password
 
-        await User.create({
-            username,
-            email,
-            password:hashedPassword
-        });
-        return res.status(201).json({
-            message:"Account created successfully",
-            success:true
-        });
+//         await User.create({
+//             username,
+//             email,
+//             password:hashedPassword
+//         });
+//         return res.status(201).json({
+//             message:"Account created successfully",
+//             success:true
+//         });
         
-    } catch (error) {
-        // console.log(error);
-        console.error("Registration error:", error);
-        return res.status(500).json({
-            message: "Internal Server Error",
-            success: false
-        });
+//     } catch (error) {
+//         // console.log(error);
+//         console.error("Registration error:", error);
+//         return res.status(500).json({
+//             message: "Internal Server Error",
+//             success: false
+//         });
+//     }
+// }
+
+// REGISTER
+export const register = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Basic required fields check
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        message: "Something is missing, please check!",
+        success: false,
+      });
     }
-}
+
+    // Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(409).json({
+        message: "Email already in use. Try a different one.",
+        success: false,
+      });
+    }
+
+    // Check if username already exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(409).json({
+        message: "Username already exists. Try a different one.",
+        success: false,
+      });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create user
+    await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    return res.status(201).json({
+      message: "Account created successfully",
+      success: true,
+    });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    // Handle Mongoose validation errors
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map(val => val.message);
+      return res.status(400).json({
+        message: messages.join(", "),
+        success: false,
+      });
+    }
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+
 
 // LOGIN
 export const login = async(req,res)=>{

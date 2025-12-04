@@ -67,7 +67,7 @@ const Login = () => {
                 
            <form onSubmit={loginHandler} className='md:shadow-xs md:shadow-gray-600 bg-black flex flex-col gap-5 p-7 md:rounded-2xl text-white w-[90%] max-w-md'>
                <div>
-                   <Image className='w-40 h-32 mx-auto mb-2' src="NexaConnect.png" alt="Logo"/>
+                   <Image className='w-40 h-32 mx-auto mb-2' src="NexaConnect.png" alt="Logo" width={100} height={100}/>
                    <p className='text-2xl font-bold font-serif text-center '>Login</p>
                    <p className='text-gray-300 text-center mt-2 font-serif italic'>Connect with friends and share your moments.</p>
                </div>

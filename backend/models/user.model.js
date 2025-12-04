@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    username:{type:String, required:true, unique:true, minlength: 3, match: [/^[a-zA-Z0-9._]+$/, 'Username can only contain letters, numbers, underscores, or dots.']},
+    username:{type:String, required:true, unique:true, minlength: 3, maxlength:15, trim:true, match: [/^[a-zA-Z0-9._]+$/, 'Username can only contain letters, numbers, underscores, or dots.']},
     email:{type:String, required:true, unique:true, match: [/.+\@.+\..+/, 'Please enter a valid email address']},
     password:{type:String, required:true, minlength: 3},
     profilePicture:{type:String, default:""},
