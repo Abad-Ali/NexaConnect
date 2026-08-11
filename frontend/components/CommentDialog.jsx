@@ -1,132 +1,232 @@
-import React, { useEffect, useState } from 'react'
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Link from 'next/link'
-import { MoreHorizontal, SendHorizonal } from 'lucide-react'
-import { Button } from './ui/button'
-import { useDispatch, useSelector } from 'react-redux'
-import Comment from './Comment'
-import axios from 'axios'
-import { toast } from 'sonner'
-import { setPosts } from '@/redux/postSlice'
+"use client";
 
-const CommentDialog = ({open, setOpen}) => {
+import React, { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { MoreHorizontal, SendHorizontal, Loader2 } from "lucide-react";
+import { Button } from "./ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import Comment from "./Comment";
+import axios from "axios";
+import { toast } from "sonner";
+import { setPosts } from "@/redux/postSlice";
+
+const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
-  const { selectedPost, posts} = useSelector(store=>store.post);
   const [comment, setComment] = useState([]);
+  const [sending, setSending] = useState(false);
+
+  const { selectedPost, posts } = useSelector((store) => store.post);
+  const { user } = useSelector((store) => store.auth);
+
   const dispatch = useDispatch();
-  const {user} = useSelector(store=>store.auth);
-  
-  useEffect(()=>{
-    if(selectedPost){
-      setComment(selectedPost?.comments)
-    }
-  },[selectedPost]);
 
-  const changeEventHandler = (e)=>{
-    const inputText = e.target.value;
-    if(inputText.trim()){
-      setText(inputText);
-    }else{
-      setText("");
+  useEffect(() => {
+    if (selectedPost) {
+      setComment(selectedPost?.comments || []);
     }
-  }
+  }, [selectedPost]);
 
-  const sendCommentHandler = async()=>{
-    // alert(text);
+  const changeEventHandler = (e) => {
+    setText(e.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      if (text.trim() && !sending) {
+        sendCommentHandler();
+      }
+    }
+  };
+
+  const sendCommentHandler = async () => {
+    if (!text.trim() || !selectedPost?._id || sending) {
+      return;
+    }
+
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v2/post/${selectedPost._id}/comment`, {text}, {
-        headers:{
-          'Content-Type':'application/json'
+      setSending(true);
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v2/post/${selectedPost._id}/comment`,
+        {
+          text: text.trim(),
         },
-        withCredentials:true
-      });
-      
-      if(res.data.success){
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
+
         setComment(updatedCommentData);
 
-        const updatedPostData = posts.map(p=>
-          p._id === selectedPost._id ? {...p, comments: updatedCommentData} : p
+        const updatedPostData = posts.map((post) =>
+          post._id === selectedPost._id
+            ? {
+                ...post,
+                comments: updatedCommentData,
+              }
+            : post
         );
+
         dispatch(setPosts(updatedPostData));
-        toast.success(res.data.message);
         setText("");
+        toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Comment error:", error);
+
+      toast.error(error?.response?.data?.message || "Failed to add comment");
+    } finally {
+      setSending(false);
     }
-  }
+  };
+
+  const handleDialogChange = (value) => {
+    setOpen(value);
+
+    if (!value) {
+      setText("");
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTitle/>
-        <DialogContent onInteractOutside={()=> setOpen(false)} className="bg-gray-950 max-w-full h-full p-0 m-0 flex flex-col">
-            <div className='flex flex-col'>
-                <div className='w-full h-[50vh] flex justify-center items-center'>
-                   <img src={selectedPost?.image} alt='post-img'
-                      className='w-full h-full object-cover rounded-t-lg'
-                   />
-               </div>
-   
-               <div className='w-full flex flex-col justify-between pt-3 text-white'>
-                   <div className='flex items-center justify-between p-4'>
-                      <div className='flex items-center gap-2'>
-                        <Link href=''>
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage src={selectedPost?.author?.profilePicture ||'/default_pic.jpg'} alt='Post_image'/>
-                            <AvatarFallback><img src='./favicon.ico'/></AvatarFallback>
-                          </Avatar>
-                        </Link>
-                        <div className='flex flex-col justify-center'>
-                          <Link href="" className='font-bold font-serif'>{selectedPost?.author?.username}</Link> 
-                          <span className='text-slate-500 text-xs'>{selectedPost?.author?.bio || "Just getting started on NexaConnect."}</span>
-                        </div>
-                      </div>
+    <Dialog open={open} onOpenChange={handleDialogChange}>
+      <DialogTitle className="sr-only">Post Comments</DialogTitle>
 
-                      <div>
-                        <Dialog>
-                         <DialogTrigger asChild>
-                           <MoreHorizontal className='cursor-pointer'/>
-                         </DialogTrigger>
-                         <DialogTitle/>
-                         <DialogContent className='bg-black shadow-lg shadow-gray-600 flex flex-col items-center text-center'>
-                           <Link href={`/profile/${selectedPost?.author._id}`}><Button variant='ghost' className='cursor-pointer w-fit font-bold font-serif text-white hover:bg-gray-800 hover:text-white transition-all bg-black'>
-                             View Profile
-                           </Button></Link>
-                           {
-                            selectedPost?.author._id === user?._id ? (
-                              <Link href={`/post/${selectedPost._id}`}><Button variant='ghost' className='cursor-pointer w-fit font-bold font-serif text-white hover:bg-gray-800 hover:text-white transition-all bg-black'>
-                               Full Post
-                              </Button></Link>
-                            ) : (
-                              <Link href={window.innerWidth > 1024 ? '/chat' : `/chat/${user._id}`}><Button variant='ghost' className='cursor-pointer w-fit font-bold font-serif text-white hover:bg-gray-800 hover:text-white transition-all bg-black'>
-                                Message 
-                              </Button>
-                              </Link>
-                            )
-                           }
-                         </DialogContent>
-                        </Dialog>
-                      </div>
-                   </div>
-                   <hr />
-                   <div className='h-[25vh] md:h-[30vh] scrollable overflow-y-auto px-4'>
-                      {
-                        comment.map((comment)=> <Comment key={comment._id} comment={comment}/>)
-                      }
-                      {/* Comments will be shown  here... */}
-                   </div>
-                   <div className='fixed bottom-0 left-0 right-0 z-10 flex p-4 backdrop-blur-md bg-white/10 rounded-t-lg'>
-                      <input type='text' placeholder='Add a comment...' value={text} onChange={changeEventHandler} className='outline-none text-sm w-full'/>
-                      {
-                        text && <SendHorizonal disabled={!text.trim()} onClick={sendCommentHandler} className='h-5 text-blue-700'/>
-                      }
-                   </div>
-               </div>
+      <DialogContent
+        onInteractOutside={() => setOpen(false)}
+        className="w-full h-[100dvh] max-w-none p-0 m-0 rounded-none border-0 bg-[#090909] text-white overflow-hidden flex flex-col md:w-[90vw] md:max-w-5xl md:h-[85vh] md:rounded-2xl md:border md:border-white/10"
+      >
+        <div className="w-full shrink-0 bg-black hidden md:flex items-center justify-center h-[38vh] md:w-[55%] md:h-full md:absolute md:left-0 md:top-0">
+          {selectedPost?.image && (
+            <img src={selectedPost.image} alt="Post" className="w-full h-full object-cover" />
+          )}
+        </div>
+
+        <div className="flex flex-col min-h-0 flex-1 bg-[#090909] md:ml-[55%] md:w-[45%]">
+          <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-white/10">
+            <Link
+              href={`/profile/${selectedPost?.author?._id}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 min-w-0"
+            >
+              <Avatar className="w-9 h-9 shrink-0 border border-white/10">
+                <AvatarImage src={selectedPost?.author?.profilePicture || "/default_pic.jpg"} alt="Profile" />
+                <AvatarFallback>NC</AvatarFallback>
+              </Avatar>
+
+              <div className="min-w-0">
+                <p className="text-sm font-semibold truncate">{selectedPost?.author?.username}</p>
+                <p className="text-xs text-gray-500 truncate max-w-[220px]">
+                  {selectedPost?.author?.bio || "Sharing moments on NexaConnect"}
+                </p>
+              </div>
+            </Link>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="h-9 w-9 shrink-0 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
+                >
+                  <MoreHorizontal size={20} />
+                </button>
+              </DialogTrigger>
+
+              <DialogContent className="w-[calc(100%-32px)] max-w-[300px] bg-[#090909] border border-white/10 rounded-2xl p-2">
+                <DialogTitle className="sr-only">Post options</DialogTitle>
+
+                <div className="flex flex-col gap-1">
+                  <Link href={`/profile/${selectedPost?.author?._id}`} onClick={() => setOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10"
+                    >
+                      View Profile
+                    </Button>
+                  </Link>
+
+                  {selectedPost?.author?._id === user?._id ? (
+                    <Link href={`/post/${selectedPost?._id}`} onClick={() => setOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10"
+                      >
+                        View Full Post
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href="/chat" onClick={() => setOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10"
+                      >
+                        Message
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 [scrollbar-width:thin] [scrollbar-color:#555_transparent]">
+            {comment.length === 0 ? (
+              <div className="min-h-full flex flex-col items-center justify-center text-center text-gray-500">
+                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-3">
+                  <SendHorizontal size={20} className="text-gray-600" />
+                </div>
+
+                <p className="text-sm font-medium text-gray-400">No comments yet</p>
+                <p className="text-xs mt-1 text-gray-600">Be the first to comment.</p>
+              </div>
+            ) : (
+              comment.map((item) => <Comment key={item._id} comment={item} />)
+            )}
+          </div>
+
+          <div className="shrink-0 w-full border-t border-white/10 p-3 bg-[#090909] pb-[calc(12px+env(safe-area-inset-bottom))]">
+            <div className="flex items-center gap-3 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 focus-within:border-white/20 transition">
+              <Avatar className="h-7 w-7 shrink-0">
+                <AvatarImage src={user?.profilePicture || "/default_pic.jpg"} alt="Your profile" />
+                <AvatarFallback className="text-[9px]">NC</AvatarFallback>
+              </Avatar>
+
+              <input
+                type="text"
+                placeholder="Add a comment..."
+                value={text}
+                onChange={changeEventHandler}
+                onKeyDown={handleKeyDown}
+                disabled={sending}
+                className="flex-1 min-w-0 bg-transparent outline-none text-sm text-white placeholder:text-gray-600"
+              />
+
+              {text.trim() && (
+                <button
+                  type="button"
+                  disabled={sending}
+                  onClick={sendCommentHandler}
+                  className="shrink-0 text-blue-500 hover:text-blue-400 disabled:opacity-50 transition cursor-pointer"
+                >
+                  {sending ? <Loader2 size={19} className="animate-spin" /> : <SendHorizontal size={19} />}
+                </button>
+              )}
             </div>
-        </DialogContent>
+          </div>
+        </div>
+      </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default CommentDialog
+export default CommentDialog;

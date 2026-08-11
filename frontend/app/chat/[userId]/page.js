@@ -87,25 +87,64 @@ const SelectedUserPage = () => {
           <div className="flex-1 min-h-0">
             <Messages selectedUser={localUser} />
           </div>
-          <div className="fixed bottom-1 w-full flex justify-between items-center border-t-1 border-gray-500 p-2 rounded-2xl backdrop-blur-md bg-white/10">
-            <Input
-              ref={inputRef}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessageHandler(localUser._id);
-                  setTextMessage("");
-                }
-              }}
-              value={textMessage} onChange={(e)=>setTextMessage(e.target.value)}
-              type="text"
-              className="focus-visible:ring-transparent border-none font-semibold"
-              placeholder="Message Now..."
-            />
-            <div className="bg-gray-950 rounded-full p-2 cursor-pointer hover:bg-black">
-              <SendHorizonal onClick={()=>sendMessageHandler(localUser._id)} className="h-5 text-blue-700" />
-            </div>
-          </div>
+          
+          <div className="shrink-0 border-t border-white/10 p-3 sm:p-4">
+                          <div className="mx-auto flex max-w-5xl items-center gap-2">
+                            <Input
+                              ref={inputRef}
+                              value={textMessage}
+                              onChange={(e) => setTextMessage(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (
+                                  e.key === "Enter" &&
+                                  !e.shiftKey &&
+                                  textMessage?.trim()
+                                ) {
+                                  e.preventDefault();
+          
+                                  sendMessageHandler(localUser._id);
+                                  setTextMessage("");
+                                }
+                              }}
+                              type="text"
+                              className="
+                            h-12 flex-1 rounded-xl
+                            border border-white/10
+                            px-4
+                            text-sm font-medium
+                            placeholder:text-zinc-600
+                            focus-visible:border-white/20
+                            focus-visible:ring-0
+                          "
+                              placeholder={`Message ${localUser?.username || "user"}...`}
+                            />
+          
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!textMessage?.trim()) return;
+          
+                                sendMessageHandler(localUser._id);
+                                setTextMessage("");
+                              }}
+                              disabled={!textMessage?.trim()}
+                              className="
+                            flex h-12 w-12 shrink-0 cursor-pointer
+                            items-center justify-center rounded-xl
+                            border border-white/10
+                            text-blue-500
+                            transition-colors
+                            hover:border-blue-500/40
+                            hover:text-blue-400
+                            disabled:cursor-not-allowed
+                            disabled:text-zinc-700
+                          "
+                              aria-label="Send message"
+                            >
+                              <SendHorizonal className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </div>
         </section>
       </div>
     </div>

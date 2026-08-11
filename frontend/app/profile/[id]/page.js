@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
-import { AtSign, Bookmark, BookmarkXIcon, CameraIcon, Heart, LayoutGrid, Loader2, LogOutIcon, MessageCircle, Settings, User } from 'lucide-react'
+import { AtSign, Bookmark, BookmarkXIcon, CameraIcon, Heart, LayoutGrid, Loader2, LogOutIcon, MessageCircle, Plus, Settings, User } from 'lucide-react'
 import Link from 'next/link'
 import Image from "next/image";
 
@@ -101,161 +101,252 @@ const Profile = () => {
   const displayedPosts = activeTab === 'posts' ? userProfile?.posts : userProfile?.bookmarks
 
   return (
-    <div className='h-screen'>
-      <div className='inline md:hidden'>
+    <div className="min-h-screen bg-black text-white">
+      <div className="md:hidden">
         <Header />
       </div>
+    
       <LeftSideBar />
-
-      <div className="pt-4 px-4 md:pl-[calc(30vw+3.5rem)] lg:pl-[calc(22%+3.5rem)] max-w-7xl mx-auto text-white mt-10 md:mt-0">
-        {/* Profile Header */}
-        <div className='text-white grid grid-cols-2 items-center py-10 mt-3 md:mt-0'>
-          <section className='flex flex-col justify-center items-center cursor-pointer'>
-            <Avatar className="w-28 md:w-40 h-28 md:h-40">
-              <AvatarImage src={userProfile?.profilePicture || '/default_pic.jpg'} alt="Profile_pic" />
-              <AvatarFallback>NC</AvatarFallback>
-            </Avatar>
-            <div className='mt-3 mb-1'>
-              <span className='font-bold font-serif text-xl md:text-2xl'>{userProfile?.name || "No Name"}</span>
+    
+      <main className="w-full pt-16 md:pt-6 p-4 sm:px-6 md:pl-[calc(30vw+3.5rem)] lg:pl-[calc(22%+3.5rem)] pb-20">
+        <section className="w-full max-w-3xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start gap-6 md:gap-10 py-8 md:py-10">
+            <div className="flex-shrink-0 flex flex-col items-center">
+              <Avatar className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 ring-2 ring-slate-700 ring-offset-4 ring-offset-black">
+                <AvatarImage src={userProfile?.profilePicture || "/default_pic.jpg"} alt="Profile picture" className="object-cover" />
+                <AvatarFallback className="bg-slate-800 text-white text-2xl">NC</AvatarFallback>
+              </Avatar>
+    
+              <div className="font-black font-serif mt-3">{userProfile?.name || "NexaConnect"}</div>
             </div>
-            <span className="text-xs md:text-sm text-slate-500">
-              Joined on {new Date(userProfile?.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </span>
-          </section>
-
-          <section>
-            <div className='flex flex-col justify-center'>
-              <div className='flex md:gap-5 gap-3'>
-                <h1 className='font-bold font-serif text-2xl md:text-3xl'>{userProfile?.username}</h1>
-                {isLoggedInUserProfile ? (
-                  <Badge className="h-7 hidden md:inline pt-1">Owner</Badge>
-                ) : (
-                  <Badge className="h-7 hidden md:inline pt-1">Member</Badge>
-                )}
+    
+            <div className="w-full flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-2 sm:gap-3 flex-wrap w-full">
+                <h1 className="text-2xl sm:text-3xl font-bold break-all">
+                  {userProfile?.username || "User"}
+                </h1>
+    
+                <Badge className="text-gray-400 bg-white/10">
+                  {isLoggedInUserProfile ? "You" : "Member"}
+                </Badge>
+    
                 {isLoggedInUserProfile && (
-                  <div className='flex items-center'>
-                    <Dialog>
-                      <DialogTrigger>
-                        <Settings className='cursor-pointer h-6 w-6' />
-                      </DialogTrigger>
-                      <DialogContent className='w-fit backdrop-blur-md bg-white/5 flex flex-col items-center justify-center'>
-                        <div className='w-fit h-fit text-slate-400 font-bold flex items-center gap-1'>
-                          <Settings className='h-4 w-4' />Settings
-                        </div>
-                        <Button onClick={logoutHandler} className='cursor-pointer'><LogOutIcon />Logout</Button>
-                        <Link href='/acount/edit'>
-                          <Button className='cursor-pointer'><User />Edit Profile</Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="p-2 rounded-full hover:bg-white/10 transition cursor-pointer">
+                        <Settings className="w-5 h-5 text-slate-300" />
+                      </button>
+                    </DialogTrigger>
+    
+                    <DialogContent className="w-[90%] max-w-sm bg-zinc-950 border border-slate-700 text-white">
+                      <div className="flex items-center justify-start gap-2 text-slate-400 font-semibold">
+                        <Settings className="w-4 h-4" />
+                        Accounts Settings
+                      </div>
+    
+                      <div className="flex flex-col gap-3 mt-3">
+                        <Link href="/acount/edit">
+                          <Button className="w-full cursor-pointer">
+                            <User className="w-4 h-4" />
+                            Edit Profile
+                          </Button>
                         </Link>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+    
+                        <Button onClick={logoutHandler} className="w-full cursor-pointer text-red-400">
+                          <LogOutIcon className="w-4 h-4" />
+                          Logout
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )}
               </div>
-              <span className='text-xs md:text-sm text-slate-500'>NexaConnect-Innovate the Way You Connect</span>
-            </div>
-
-            {/* Stats */}
-            <div className='flex mt-3 mb-7 gap-3 hover:cursor-pointer'>
-              <p className='text-xs md:text-sm font-semibold'>
-                <span className='text-lg md:text-2xl font-bold'>{userProfile?.posts.length}</span> Posts
+    
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                NexaConnect · Innovate the Way You Connect
               </p>
-              <Link href={`/followersorfollowing/${userProfile._id}`}>
-                <p className='text-xs md:text-sm font-semibold'>
-                  <span className='text-lg md:text-2xl font-bold'>{userProfile?.followers.length}</span> Followers
+    
+              <div className="flex items-center justify-center md:justify-start gap-6 sm:gap-8 mt-5">
+                <div className="text-center md:text-left">
+                  <p className="text-lg sm:text-xl font-bold">{userProfile?.posts?.length ?? 0}</p>
+                  <p className="text-xs text-slate-500">Posts</p>
+                </div>
+    
+                <Link href={`/followersorfollowing/${userProfile?._id}`} className="cursor-pointer">
+                  <div className="text-center md:text-left hover:text-blue-400 transition">
+                    <p className="text-lg sm:text-xl font-bold">{userProfile?.followers?.length ?? 0}</p>
+                    <p className="text-xs text-slate-500">Followers</p>
+                  </div>
+                </Link>
+    
+                <Link href={`/followersorfollowing/${userProfile?._id}`} className="cursor-pointer">
+                  <div className="text-center md:text-left hover:text-blue-400 transition">
+                    <p className="text-lg sm:text-xl font-bold">{userProfile?.following?.length ?? 0}</p>
+                    <p className="text-xs text-slate-500">Following</p>
+                  </div>
+                </Link>
+              </div>
+    
+              <p className="text-sm text-slate-300 mt-5 max-w-md whitespace-pre-wrap break-words">
+                {userProfile?.bio || "Just getting started on NexaConnect."}
+              </p>
+    
+              {userProfile?.createdAt && (
+                <p className="text-xs text-slate-600 mt-2">
+                  Joined{" "}
+                  {new Date(userProfile.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </p>
-              </Link>
-              <Link href={`/followersorfollowing/${userProfile._id}`}>
-                <p className='text-xs md:text-sm font-semibold'>
-                  <span className='text-lg md:text-2xl font-bold'>{userProfile?.following.length}</span> Following
-                </p>
-              </Link>
+              )}
             </div>
-            <span className='text-xs md:text-sm text-slate-200 font-semibold whitespace-pre-wrap'>{userProfile?.bio || "Just getting started on NexaConnect."}</span>
-          </section>
-        </div>
-
-        {/* Action Buttons */}
-        <section className='flex justify-center items-center gap-3 py-4'>
-          {isLoggedInUserProfile ? (
-            <>
-              <Link href={`/acount/edit`}>
-                <Button className='hover:cursor-pointer px-7 py-3'>Edit Profile</Button>
-              </Link>
-              <Button onClick={() => setOpen(true)} className='hover:cursor-pointer px-7 py-3'>Add New Post</Button>
-              <CreatePost open={open} setOpen={setOpen} />
-            </>
-          ) : (
-            isFollowing ? (
+          </div>
+    
+          <div className="flex items-center justify-center gap-2 sm:gap-3 w-full pb-6">
+            {isLoggedInUserProfile ? (
               <>
-                <Button onClick={handleFollow} className='hover:cursor-pointer px-7 py-3'>Unfollow</Button>
-                <Link href={`/chat/${userProfile?._id}`}>
-                  <Button className='hover:cursor-pointer px-7 pb-3 inline md:hidden'>Message</Button>
+                <Link href="/acount/edit" className="w-full max-w-[180px] cursor-pointer">
+                  <Button variant="secondary" className="w-full font-semibold cursor-pointer">
+                    <User className="w-4 h-4" />
+                    <span>Edit Profile</span>
+                  </Button>
                 </Link>
-                <Link href={"/chat"}>
-                  <Button className='hover:cursor-pointer px-7 pb-3 hidden md:inline'>Message</Button>
-                </Link>
+    
+                <Button onClick={() => setOpen(true)} className="w-full max-w-[180px] font-semibold cursor-pointer">
+                  <Plus className="w-4 h-4" />
+                  <span>New Post</span>
+                </Button>
+    
+                <CreatePost open={open} setOpen={setOpen} />
               </>
             ) : (
-              <Button onClick={handleFollow} className='hover:cursor-pointer bg-blue-700 px-36 lg:px-64 hover:bg-blue-800 py-3'>Follow</Button>
-            )
+              <>
+                <Button
+                  onClick={handleFollow}
+                  className={`w-full max-w-[220px] font-semibold cursor-pointer ${
+                    isFollowing ? "bg-zinc-800 hover:bg-zinc-700" : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {isFollowing ? "Following" : "Follow"}
+                </Button>
+    
+                <Link href="/chat" className="w-full max-w-[180px] cursor-pointer">
+                  <Button variant="secondary" className="w-full font-semibold cursor-pointer">
+                    Message
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+    
+          <div className="border-t border-slate-800">
+            <div className="flex justify-center items-center gap-20 sm:gap-28">
+              <button
+                onClick={() => setActiveTab("posts")}
+                className={`relative py-4 px-4 transition cursor-pointer ${
+                  activeTab === "posts" ? "text-white" : "text-slate-600"
+                }`}
+              >
+                <LayoutGrid className="w-5 h-5" />
+    
+                {activeTab === "posts" && (
+                  <span className="absolute top-0 left-0 right-0 h-[2px] bg-white" />
+                )}
+              </button>
+    
+              {isLoggedInUserProfile && (
+                <button
+                  onClick={() => setActiveTab("bookmarks")}
+                  className={`relative py-4 px-4 transition cursor-pointer ${
+                    activeTab === "bookmarks" ? "text-white" : "text-slate-600"
+                  }`}
+                >
+                  <Bookmark className="w-5 h-5" />
+    
+                  {activeTab === "bookmarks" && (
+                    <span className="absolute top-0 left-0 right-0 h-[2px] bg-white" />
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+    
+        <section className="w-full max-w-5xl mx-auto">
+          {displayedPosts?.length > 0 ? (
+            <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-4 pb-5">
+              {displayedPosts.map((post) => (
+                <div
+                  key={post._id}
+                  onClick={() => openDialog(post)}
+                  className="relative aspect-square overflow-hidden bg-zinc-900 cursor-pointer group"
+                >
+                  <Image
+                    src={post.image}
+                    alt="Post"
+                    fill
+                    sizes="(max-width: 640px) 33vw, (max-width: 1024px) 30vw, 300px"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+    
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <div className="flex items-center gap-5">
+                      <div className="flex items-center gap-1">
+                        <Heart className="w-5 h-5 fill-white" />
+                        <span className="font-semibold">{post?.likes?.length ?? 0}</span>
+                      </div>
+    
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="w-5 h-5 fill-white" />
+                        <span className="font-semibold">{post?.comments?.length ?? 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center py-16 px-4">
+              <div className="p-4 border border-slate-700 rounded-full mb-4">
+                {activeTab === "posts" ? (
+                  <CameraIcon className="w-8 h-8 text-slate-500" />
+                ) : (
+                  <BookmarkXIcon className="w-8 h-8 text-slate-500" />
+                )}
+              </div>
+    
+              <h2 className="text-xl font-bold">
+                {activeTab === "posts" ? "No posts yet" : "No bookmarks yet"}
+              </h2>
+    
+              <p className="text-sm text-slate-500 mt-1 max-w-xs">
+                {activeTab === "posts"
+                  ? isLoggedInUserProfile
+                    ? "Share your first photo with your friends."
+                    : "This user hasn't shared any photos yet."
+                  : "Posts you save will appear here."}
+              </p>
+    
+              {isLoggedInUserProfile && activeTab === "posts" && (
+                <Button onClick={() => setOpen(true)} className="mt-5 cursor-pointer">
+                  <Plus className="w-4 h-4" />
+                  Create your first post
+                </Button>
+              )}
+            </div>
           )}
         </section>
-
-        {/* Tabs */}
-        <div className='flex justify-center items-center mt-7 mb-3 gap-30'>
-          <LayoutGrid onClick={() => setActiveTab('posts')} className={`cursor-pointer text-gray-700 ${activeTab === 'posts' ? 'font-bold text-white' : ''}`} />
-          {isLoggedInUserProfile && (
-            <Bookmark onClick={() => setActiveTab('bookmarks')} className={`cursor-pointer text-gray-700 ${activeTab === 'bookmarks' ? 'font-bold text-white' : ''}`} />
-          )}
-        </div>
-        <hr />
-
-        {/* Posts */}
-        <div className={`grid grid-cols-3 gap-2 my-5 ${displayedPosts.length >= 1 ? 'pb-20 md:pb-0' : ''}`}>
-          {displayedPosts?.map(post => (
-            <div key={post._id} className='relative group cursor-pointer rounded-sm overflow-hidden mb-5'>
-              <Image onClick={() => openDialog(post)} src={post.image} alt='postimage' width={100} height={100} className='rounded-sm w-full aspect-square object-cover' />
-              <div className='absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
-                <div className='flex items-center text-gray-200 space-x-4'>
-                  <Button className='flex items-center gap-2 hover:text-slate-700 font-bold bg-transparent hover:bg-transparent'>
-                    <Heart className='fill-white' />
-                    <span>{post?.likes.length ?? 0}</span>
-                  </Button>
-                  <Button className='flex items-center gap-2 hover:text-slate-700 bg-transparent hover:bg-transparent'>
-                    <MessageCircle className='fill-white' />
-                    <span>{post?.comments.length ?? 0}</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={() => setIsDialogOpen(false)}>
+    
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTitle />
-          <DialogContent className='bg-transparent shadow-none border-none text-white p-0 m-0 w-auto max-w-none pt-8 px-5'>
+    
+          <DialogContent className="bg-transparent shadow-none border-none text-white p-0 m-0 w-auto max-w-none pt-8 px-3 sm:px-5">
             {selectedPost && <SinglePost postId={selectedPost._id} />}
           </DialogContent>
         </Dialog>
-
-        {/* Empty state */}
-        {displayedPosts.length === 0 && (
-          <div className='flex flex-col justify-center items-center w-full pb-7'>
-            <div className='p-2 border-3 border-gray-500 rounded-full w-fit cursor-pointer'>
-              {activeTab === 'posts' ? <CameraIcon className='h-7 w-7 md:h-10 md:w-10 text-gray-500' /> : <BookmarkXIcon className='h-10 w-10 text-gray-500' />}
-            </div>
-            <div className='flex flex-col items-center'>
-              <h2 className='text-xl md:text-3xl font-bold font-sans'>{activeTab === 'posts' ? 'No shared photos' : 'No bookmarks to show'}</h2>
-              <span className='text-xs md:text-sm'>{activeTab === 'posts' ? 'When you share photos, they will appear on your profile.' : 'When you add bookmarks, they will appear on your profile.'}</span>
-            </div>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   )
 }

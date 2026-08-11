@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSelector } from 'react-redux'
 import Link from 'next/link'
-import { ArrowLeft, Edit, MessageCircle, MoreVertical } from 'lucide-react'
+import { ArrowLeft, Edit, MessageCircle, MoreVertical, UserPlus, Users } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import useGetUserProfile from '@/hooks/useGetUserProfile'
 import axios from 'axios'
@@ -51,86 +51,217 @@ const Followersorfollowing = () => {
     }
   }, [activeTab, userProfile])
   return (
-    <div className='h-screen overflow-hidden'>
+    <div className="min-h-screen bg-black text-white">
       <LeftSideBar />
-      <div className="md:pl-[calc(30vw+3.5rem)] max-w-7xl mx-auto text-white md:mt-5">
-        <section className='flex justify-between items-center w-full backdrop-blur-md bg-white/10 p-2 md:rounded-2xl'>
-            <div className='flex items-center gap-3'>
-              <Link href={`/profile/${userProfile?._id}`}>
-                 <ArrowLeft className="w-7 h-7 mr-1" />
-              </Link>
-              <Link href={`/profile/${userProfile?._id}`}>
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src={userProfile?.profilePicture || '/default_pic.jpg'} alt="Profile_pic"/>
-                  <AvatarFallback>
-                    NC
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-              <Link href={`/profile/${userProfile?._id}`}><h1 className='font-bold font-serif text-sm'>{userProfile?.username}</h1>
-                <span className='text-xs text-slate-500 whitespace-pre-wrap'>
-                  {userProfile?.bio?.split('\n')[0]?.length > 40
-                  ? 'Just getting started on NexaConnect.'
-                  : userProfile?.bio.split('\n')[0] || "Just getting started on NexaConnect."}
-                </span>
-              </Link>
-            </div>
-            {
-              userProfile._id === user._id? (
-                <Link href='/acount/edit'><Edit className='mr-2'/></Link>
+    
+      <main className="w-full md:pl-[calc(30vw+3.5rem)] lg:pl-[calc(22%+3.5rem)]">
+        <div className="w-full max-w-4xl mx-auto px-3 sm:px-5 md:px-8 py-3 md:py-8">
+          <section className="sticky top-0 z-20 mb-4 md:mb-6">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/90 backdrop-blur-xl px-3 sm:px-5 py-3 shadow-lg">
+              <div className="flex items-center gap-3 min-w-0">
+                <Link
+                  href={`/profile/${userProfile?._id}`}
+                  className="flex items-center justify-center rounded-full p-1.5 hover:bg-white/10 transition cursor-pointer"
+                >
+                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                </Link>
+    
+                <Link
+                  href={`/profile/${userProfile?._id}`}
+                  className="flex items-center gap-3 min-w-0 cursor-pointer"
+                >
+                  <Avatar className="w-10 h-10 sm:w-11 sm:h-11 border border-white/10">
+                    <AvatarImage src={userProfile?.profilePicture || "/default_pic.jpg"} alt={userProfile?.username} />
+                    <AvatarFallback>NC</AvatarFallback>
+                  </Avatar>
+    
+                  <div className="min-w-0">
+                    <h1 className="font-semibold text-sm sm:text-base truncate">
+                      {userProfile?.username}
+                    </h1>
+                    <p className="text-[11px] sm:text-xs text-zinc-500 truncate max-w-[150px] sm:max-w-[300px]">
+                      {userProfile?.bio?.split("\n")?.[0]?.length > 40
+                        ? "Just getting started on NexaConnect."
+                        : userProfile?.bio?.split("\n")?.[0] || "Just getting started on NexaConnect."}
+                    </p>
+                  </div>
+                </Link>
+              </div>
+    
+              {userProfile?._id === user?._id ? (
+                <Link
+                  href="/acount/edit"
+                  className="p-2.5 rounded-xl hover:bg-white/10 transition cursor-pointer"
+                >
+                  <Edit className="w-5 h-5" />
+                </Link>
               ) : (
-                <Link href={window.innerWidth > 1024 ? '/chat' : `/chat/${userProfile._id}`}><MessageCircle className='mr-3'/></Link>
-              )
-            }
-        </section>
-
-        <section className='md:my-3 mt-5 mb-3'>
-            <div className='flex justify-evenly items-center'>
-                <h1 onClick={()=>setActiveTab('followers')} className={`font-semibold text-lg cursor-pointer ${activeTab === 'followers'  ? 'underline underline-offset-3' : 'text-slate-500'}`}><span className='text-2xl font-semibold'>{userProfile.followers.length}</span> followers</h1>
-                <h1 onClick={()=>setActiveTab('following')} className={`font-semibold text-lg cursor-pointer ${activeTab === 'following'  ? 'underline underline-offset-3' : 'text-slate-500'}`}><span className='text-2xl font-semibold'>{userProfile.following.length}</span> following</h1>
+                <Link
+                  href="/chat"
+                  className="p-2.5 rounded-xl hover:bg-white/10 transition cursor-pointer"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                </Link>
+              )}
             </div>
-            <hr className='my-2 border-gray-600'/>
-
-               <div className='h-[70vh] md:h-[75vh] overflow-y-auto scrollable w-full items-center py-2'>
-                 {userList.length > 0 ? (
-                   userList.map(user => (
-                      <div key={user._id} className="mb-3 backdrop-blur-md bg-white/10 p-3 rounded-xl mx-2">
-                        <div className='flex justify-between items-center'>
-                          <div className='flex items-center gap-3'>
-                            <Avatar className="w-11 h-11 cursor-pointer">
-                              <AvatarImage src={user.profilePicture || '/default_pic.jpg'} alt={user.username} />
-                              <AvatarFallback>NC</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <Link href={`/profile/${user._id}`}><h2 className="font-semibold">{user.username}</h2></Link>
-                              <span className='text-xs text-slate-500 whitespace-pre-wrap'>
-                                 {user?.bio?.split('\n')[0]?.length > 40
-                                 ? 'Just getting started on NexaConnect.'
-                                 : user?.bio.split('\n')[0] || "Just getting started on NexaConnect."}
-                               </span>
+          </section>
+    
+          <section className="mb-5 px-1">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Connections
+            </h2>
+            <p className="text-sm text-zinc-500 mt-1">
+              People connected with {userProfile?.username}.
+            </p>
+          </section>
+    
+          <section className="mb-5">
+            <div className="grid grid-cols-2 p-1 rounded-2xl bg-zinc-900 border border-white/10">
+              <button
+                onClick={() => setActiveTab("followers")}
+                className={`relative flex flex-col items-center justify-center rounded-xl py-3 transition-all duration-200 cursor-pointer ${
+                  activeTab === "followers" ? "bg-white text-black shadow-md" : "text-zinc-500 hover:text-white"
+                }`}
+              >
+                <span className="text-lg sm:text-xl font-bold">
+                  {userProfile?.followers?.length || 0}
+                </span>
+                <span className="text-xs sm:text-sm">Followers</span>
+              </button>
+    
+              <button
+                onClick={() => setActiveTab("following")}
+                className={`relative flex flex-col items-center justify-center rounded-xl py-3 transition-all duration-200 cursor-pointer ${
+                  activeTab === "following" ? "bg-white text-black shadow-md" : "text-zinc-500 hover:text-white"
+                }`}
+              >
+                <span className="text-lg sm:text-xl font-bold">
+                  {userProfile?.following?.length || 0}
+                </span>
+                <span className="text-xs sm:text-sm">Following</span>
+              </button>
+            </div>
+          </section>
+    
+          <section>
+            <div className="h-[calc(100vh-260px)] min-h-[350px] overflow-y-auto pr-1 scrollable">
+              {userList?.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {userList.map((person) => (
+                    <div
+                      key={person._id}
+                      className="group rounded-2xl border border-white/10 bg-zinc-950 hover:bg-zinc-900 hover:border-white/20 transition-all duration-200 p-4"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <Link
+                          href={`/profile/${person._id}`}
+                          className="flex items-center gap-3 min-w-0 cursor-pointer"
+                        >
+                          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border border-white/10 group-hover:border-white/30 transition">
+                            <AvatarImage
+                              src={person?.profilePicture || "/default_pic.jpg"}
+                              alt={person?.username}
+                            />
+                            <AvatarFallback>NC</AvatarFallback>
+                          </Avatar>
+    
+                          <div className="min-w-0">
+                            <h2 className="font-semibold text-sm sm:text-base truncate group-hover:text-blue-400 transition">
+                              {person?.username}
+                            </h2>
+                            <p className="text-xs text-zinc-500 line-clamp-2 mt-0.5">
+                              {person?.bio?.split("\n")?.[0]?.length > 40
+                                ? "Just getting started on NexaConnect."
+                                : person?.bio?.split("\n")?.[0] || "Just getting started on NexaConnect."}
+                            </p>
+                          </div>
+                        </Link>
+    
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <button className="shrink-0 p-2 rounded-full hover:bg-white/10 transition cursor-pointer">
+                              <MoreVertical className="w-5 h-5 text-zinc-400" />
+                            </button>
+                          </DialogTrigger>
+    
+                          <DialogTitle />
+    
+                          <DialogContent className="w-[90%] max-w-xs rounded-2xl border border-white/10 bg-zinc-950 text-white">
+                            <div className="flex flex-col gap-2">
+                              <Link href={`/profile/${person._id}`} className="cursor-pointer">
+                                <Button
+                                  variant="outline"
+                                  className="w-full h-11 rounded-xl bg-transparent text-white border-white/20 hover:bg-white/10 hover:text-white cursor-pointer"
+                                >
+                                  View Profile
+                                </Button>
+                              </Link>
+    
+                              <Link href="/chat" className="cursor-pointer">
+                                <Button
+                                  variant="outline"
+                                  className="w-full h-11 rounded-xl bg-transparent text-white border-white/20 hover:bg-white/10 hover:text-white cursor-pointer"
+                                >
+                                  <MessageCircle className="w-4 h-4 mr-2" />
+                                  Message
+                                </Button>
+                              </Link>
                             </div>
-                          </div>
-                          <div>
-                            <Dialog>
-                            <DialogTrigger>
-                              <MoreVertical className='cursor-pointer'/>
-                            </DialogTrigger>
-                            <DialogTitle/>
-                            <DialogContent className='backdrop-blur-md bg-white/5 text-white w-fit md:ml-[30vw]'>
-                              <Link href={`/profile/${user._id}`}><Button className='cursor-pointer font-semibold font-sans'>Visti Profile</Button></Link>
-                              <Link href={window.innerWidth > 1024 ? '/chat' : `/chat/${user._id}`}><Button className='cursor-pointer font-semibold font-sans px-2'>Message Now</Button></Link>
-                            </DialogContent>
-                          </Dialog>
-                          </div>
-                       </div>
+                          </DialogContent>
+                        </Dialog>
                       </div>
-                   ))
-                 ) : (
-                   <p className='text-center text-gray-400 mt-10'>No {activeTab} to show.</p>
-                 )}
-               </div>
-        </section>
-      </div>
+    
+                      <div className="flex gap-2 mt-4">
+                        <Link href={`/profile/${person._id}`} className="flex-1 cursor-pointer">
+                          <Button
+                            variant="outline"
+                            className="w-full h-9 rounded-xl text-xs bg-transparent border-white/10 text-white hover:bg-white/10 hover:text-white cursor-pointer"
+                          >
+                            View Profile
+                          </Button>
+                        </Link>
+    
+                        <Link href="/chat" className="flex-1 cursor-pointer">
+                          <Button className="w-full h-9 rounded-xl text-xs bg-white text-black hover:bg-zinc-200 cursor-pointer">
+                            <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
+                            Message
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center px-5">
+                  <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-4">
+                    {activeTab === "followers" ? (
+                      <Users className="w-7 h-7 text-zinc-500" />
+                    ) : (
+                      <UserPlus className="w-7 h-7 text-zinc-500" />
+                    )}
+                  </div>
+    
+                  <h3 className="font-semibold text-lg">
+                    No {activeTab} yet
+                  </h3>
+    
+                  <p className="text-sm text-zinc-500 max-w-xs mt-1">
+                    {activeTab === "followers"
+                      ? `${userProfile?.username} doesn't have any followers yet.`
+                      : `${userProfile?.username} isn't following anyone yet.`}
+                  </p>
+    
+                  <Link href="/" className="cursor-pointer">
+                    <Button className="mt-5 rounded-xl px-6 bg-white text-black hover:text-black hover:bg-white/80 cursor-pointer">
+                      Discover People
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
     </div>
   )
 }

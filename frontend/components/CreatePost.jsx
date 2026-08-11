@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from './ui/textarea';
 import { readFileAsDataURL } from '@/lib/utils';
-import { ArrowRightFromLineIcon, Loader2 } from 'lucide-react';
+import { ArrowRightFromLineIcon, Loader2, PlusSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -69,56 +69,88 @@ const CreatePost = ({open, setOpen}) => {
   }
 };
   return (
-    // <Dialog open={open} onOpenChange={setOpen}>
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-      <DialogTitle/>
-      <DialogContent onInteractOutside={()=> setOpen(false)} className="backdrop-blur-sm bg-white/7 text-white">
-        <DialogHeader className="font-bold font-serif text-xl flex justify-center items-center">Create a new post</DialogHeader>
-        <div className='flex items-center gap-3'>
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={user?.profilePicture || '/default_pic.jpg'} alt='Post_image'/>
-              <AvatarFallback>NC</AvatarFallback>
-            </Avatar>
-            
-            <div>
-              <h1 className='font-bold font-serif'>{user?.username}</h1>
-              <span className='text-slate-400 text-sm whitespace-pre-wrap'>
-                {user?.bio?.split('\n')[0]?.length > 40
-                  ? 'Just getting started on NexaConnect.'
-                  : user?.bio.split('\n')[0] || "Just getting started on NexaConnect."}
-              </span>
+      <DialogTitle />
+    
+      <DialogContent onInteractOutside={() => setOpen(false)} className="w-[calc(100%-2rem)] sm:max-w-lg max-h-[90vh] overflow-y-auto backdrop-blur-xl bg-black/90 border border-slate-700 text-white rounded-2xl p-5 sm:p-6 scrollable">
+        <DialogHeader className="mb-5">
+          <h2 className="text-xl sm:text-2xl font-bold font-serif text-center">Create a new post</h2>
+          <p className="text-xs text-gray-400 text-center mt-1">Share a moment with your friends</p>
+        </DialogHeader>
+    
+        <div className="flex items-center gap-3 mb-4">
+          <Avatar className="w-10 h-10 shrink-0">
+            <AvatarImage src={user?.profilePicture || "/default_pic.jpg"} alt="Profile picture" />
+            <AvatarFallback>NC</AvatarFallback>
+          </Avatar>
+    
+          <div className="min-w-0">
+            <h1 className="font-bold font-serif truncate">{user?.username || "NexaConnect User"}</h1>
+            <span className="text-slate-400 text-xs sm:text-sm line-clamp-1">
+              {user?.bio?.split("\n")?.[0]?.length > 40
+                ? "Just getting started on NexaConnect."
+                : user?.bio?.split("\n")?.[0] || "Just getting started on NexaConnect."}
+            </span>
+          </div>
+        </div>
+    
+        <hr className="border-slate-700 mb-5" />
+    
+        <div className="flex flex-col items-center mb-4">
+          <input ref={imageRef} onChange={fileChangeHandler} type="file" accept="image/*" className="hidden" />
+    
+          {!imagePreview ? (
+            <button type="button" onClick={() => imageRef.current?.click()} className="w-full aspect-video sm:aspect-[4/3] rounded-xl border-2 border-dashed border-slate-600 hover:border-blue-500 hover:bg-blue-500/5 transition-all duration-200 flex flex-col items-center justify-center gap-2  text-gray-400 hover:text-blue-400 cursor-cell">
+              <PlusSquare className="h-8 w-8" />
+              <span className="font-semibold text-sm sm:text-base">Select from device</span>
+              <span className="text-xs text-gray-500">JPG, PNG or WEBP</span>
+            </button>
+          ) : (
+            <div className="relative w-full">
+              <div className="w-full aspect-square max-h-[55vh] rounded-xl overflow-hidden border border-slate-600 bg-black shadow-lg">
+                <img src={imagePreview} className="w-full h-full object-contain" alt="Post preview" />
+              </div>
+    
+              <button type="button" onClick={() => imageRef.current?.click()} className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-black/70 backdrop-blur-md border border-slate-600 text-xs font-semibold hover:bg-black transition">
+                Change image
+              </button>
             </div>
+          )}
+        </div>
+    
+        <div className="space-y-1">
+          <Textarea
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            maxLength={500}
+            className="min-h-[90px] resize-none bg-white/5 border-slate-700 focus-visible:ring-1 focus-visible:ring-blue-600 placeholder:text-gray-500 rounded-xl"
+            placeholder="Write a caption for your post..."
+          />
+    
+          <div className="flex justify-end">
+            <span className="text-[11px] text-gray-500">{caption.length}/500</span>
           </div>
-          <hr />
-          <div className='flex flex-col items-center'>
-            <input ref={imageRef} onChange={fileChangeHandler} type='file' className='hidden'/>
-            {
-              !imagePreview && (
-                <p onClick={()=> imageRef.current.click()} className='text-blue-800 font-black text-lg hover:text-blue-900 cursor-pointer'>Select from device</p>
-              )
-            }
-            {
-              imagePreview && (
-                <div className='w-full max-h-[300px] flex items-center justify-center overflow-hidden rounded-xl border border-slate-400 shadow-md'>
-                  <img src={imagePreview} className="w-full h-full object-cover" alt='preview_post'/>
-                </div>
-              )
-            }
+        </div>
+    
+        {imagePreview && (
+          <div className="flex gap-3 mt-4">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="flex-1 border-slate-700 bg-transparent text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer">
+              Cancel
+            </Button>
+    
+            {loading ? (
+              <Button disabled className="flex-1 bg-blue-600 opacity-80">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </Button>
+            ) : (
+              <Button type="button" onClick={createPostHandler} className="flex-1 bg-blue-600 hover:bg-blue-700 font-semibold cursor-pointer">
+                Post
+                <ArrowRightFromLineIcon className="ml-2 h-5 w-5" />
+              </Button>
+            )}
           </div>
-          <Textarea value={caption} onChange={(e)=> setCaption(e.target.value)} className="focus-visible:ring-transparent border-none" placeholder="Write a caption for your post..."/>
-          
-          {
-            imagePreview && (
-              loading ? (
-                <Button>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin'/>
-                  Uploading...
-                </Button>
-              ) : (
-              <Button onClick={createPostHandler}>Post<ArrowRightFromLineIcon className='h-5 text-blue-700'/></Button>
-              )
-            )
-          }
+        )}
       </DialogContent>
     </Dialog>
   )
