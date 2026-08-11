@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import axios from 'axios';
-import { Loader2, LogInIcon } from 'lucide-react';
+import { Loader2, LogInIcon, UserRoundCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
@@ -56,6 +56,32 @@ const Login = () => {
         }
     }
 
+    const demoLoginHandler = async () => {
+        try {
+            setloading(true);
+    
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v2/user/demo-login`,{},{
+                  withCredentials: true
+                }
+            );
+    
+            if (res.data.success) {
+                dispatch(setAuthUser(res.data.user));
+                router.replace("/");
+                toast.success(res.data.message);
+            }
+    
+        } catch (error) {
+            console.error("Demo login error:", error);
+    
+            toast.error(
+                error?.response?.data?.message || "Demo login failed"
+            );
+        } finally {
+            setloading(false);
+        }
+    };
+
     useEffect(()=>{
       if(user){
         router.replace('/')
@@ -97,6 +123,26 @@ const Login = () => {
                    </Button>
                  )
                }
+
+               <div className="flex items-center gap-3 my-1">
+                  <div className="h-px bg-gray-600 flex-1"></div>
+                  <span className="text-xs text-gray-400">OR</span>
+                  <div className="h-px bg-gray-600 flex-1"></div>
+                </div>
+                
+                <Button type="button" onClick={demoLoginHandler} disabled={loading} className="bg-gray-900 hover:bg-gray-800 transition-colors duration-200 font-bold font-serif py-2 px-4 rounded-md text-white text-sm sm:text-base cursor-pointer flex items-center justify-center gap-2">
+                    {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Logging in...
+                        </>
+                    ) : (
+                        <>
+                          <UserRoundCheck className="h-4 w-4" />
+                          Try Demo Account
+                        </>
+                    )}
+                </Button>
    
                <span className="text-right text-xs text-gray-300 font-serif">
                {"Doesn't have an account?"} <a href="/signup" className="underline text-blue-400 mr-3 font-bold font-serif">Signup</a>

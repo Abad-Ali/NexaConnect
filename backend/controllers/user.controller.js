@@ -424,3 +424,90 @@ export const getUsersByIds = async (req, res) => {
     });
   }
 };
+
+
+// DEMO LOGIN
+export const demoLogin = async (req, res) => {
+    try {
+        const demoEmail = process.env.DEMO_EMAIL;
+        const demoPassword = process.env.DEMO_PASSWORD;
+        const demoUsername = process.env.DEMO_USERNAME || "NexaConnect Demo";
+
+        if (!demoEmail || !demoPassword) {
+            return res.status(500).json({
+                message: "Demo account is not configured",
+                success: false
+            });
+        }
+
+        let user = await User.findOne({ email: demoEmail });
+
+        // Create demo account if it doesn't exist
+        if (!user) {
+            const hashedPassword = await bcrypt.hash(demoPassword, 10);
+
+            user = await User.create({
+                username: demoUsername,
+                email: demoEmail,
+                password: hashedPassword,
+                profilePicture: "",
+                bio: "Demo account for exploring NexaConnect",
+                followers: [],
+                following: [],
+                posts: []
+            });
+        }
+
+        // Create JWT
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.SECRET_KEY,
+            { expiresIn: "1d" }
+        );
+
+        // Populate demo user's posts
+        const populatedPost = await Promise.all(
+            user.posts.map(async (postId) => {
+                const post = await Post.findById(postId);
+
+                if (post && post.author.equals(user._id)) {
+                    return post;
+                }
+
+                return null;
+            })
+        );
+
+        const userData = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            profilePicture: user.profilePicture,
+            bio: user.bio,
+            followers: user.followers,
+            following: user.following,
+            posts: populatedPost.filter(Boolean)
+        };
+
+        return res
+            .cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                maxAge: 1 * 24 * 60 * 60 * 1000
+            })
+            .json({
+                message: "Welcome to NexaConnect Demo",
+                success: true,
+                user: userData
+            });
+
+    } catch (error) {
+        console.error("Demo login error:", error);
+
+        return res.status(500).json({
+            message: "Internal Server Error",
+            success: false
+        });
+    }
+};
