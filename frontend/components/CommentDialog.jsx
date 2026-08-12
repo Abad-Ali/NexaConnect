@@ -149,7 +149,7 @@ const CommentDialog = ({ open, setOpen }) => {
                   <Link href={`/profile/${selectedPost?.author?._id}`} onClick={() => setOpen(false)}>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10"
+                      className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10 hover:text-white"
                     >
                       View Profile
                     </Button>
@@ -159,7 +159,7 @@ const CommentDialog = ({ open, setOpen }) => {
                     <Link href={`/post/${selectedPost?._id}`} onClick={() => setOpen(false)}>
                       <Button
                         variant="ghost"
-                        className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10"
+                        className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10 hover:text-white"
                       >
                         View Full Post
                       </Button>
@@ -168,7 +168,7 @@ const CommentDialog = ({ open, setOpen }) => {
                     <Link href="/chat" onClick={() => setOpen(false)}>
                       <Button
                         variant="ghost"
-                        className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10"
+                        className="w-full justify-start h-11 rounded-xl text-white hover:bg-white/10 hover:text-white"
                       >
                         Message
                       </Button>

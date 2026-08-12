@@ -11,7 +11,7 @@ export default function Home() {
   useGetAllPosts();
   useGetSuggestedUsers();
   return (
-    <div className="text-white h-screen overflow-hidden">
+    <div className="text-white overflow-hidden">
       {/* md:bg-[url('/bg.png')] */}
       <div className="flex h-full">
         {/* Header */}

@@ -138,21 +138,21 @@ const Profile = () => {
                       </button>
                     </DialogTrigger>
     
-                    <DialogContent className="w-[90%] max-w-sm bg-zinc-950 border border-slate-700 text-white">
+                    <DialogContent className="w-[50vw] lg:w-[30vw] bg-white/10 backdrop-blur-2xl border border-slate-700 text-white">
                       <div className="flex items-center justify-start gap-2 text-slate-400 font-semibold">
                         <Settings className="w-4 h-4" />
-                        Accounts Settings
+                        Account Settings
                       </div>
     
                       <div className="flex flex-col gap-3 mt-3">
                         <Link href="/acount/edit">
-                          <Button className="w-full cursor-pointer">
+                          <Button variant='ghost' className="h-11 w-full justify-center rounded-xl font-medium text-white hover:bg-black/10 cursor-pointer hover:text-white border border-white/10">
                             <User className="w-4 h-4" />
                             Edit Profile
                           </Button>
                         </Link>
     
-                        <Button onClick={logoutHandler} className="w-full cursor-pointer text-red-400">
+                        <Button variant='ghost' onClick={logoutHandler} className="h-11 w-full justify-center rounded-xl font-medium text-red-500 hover:bg-red-500/10 hover:text-red-400 cursor-pointer border border-white/10">
                           <LogOutIcon className="w-4 h-4" />
                           Logout
                         </Button>

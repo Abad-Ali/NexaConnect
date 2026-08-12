@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bookmark, Heart, MessageCircle, MoreVertical, Send, SendHorizonal }from "lucide-react";
+import { Bookmark, Heart, MessageCircle, MoreVertical, Send, SendHorizonal, Trash }from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import CommentDialog from "./CommentDialog";
@@ -155,7 +155,7 @@ const Post = ({ post }) => {
   };
 
   return (
-<div className="w-[350px] md:w-full max-w-xl lg:max-w-[560px] mx-auto mb-3 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-lg shadow-black/20 transition-all duration-300 hover:border-slate-700">
+<div className="w-[350px] md:w-[450px] mx-auto mb-3 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-lg shadow-black/20 transition-all duration-300 hover:border-slate-700">
   <div className="flex items-center justify-between px-4 py-4 sm:px-5">
     <Link href={`/profile/${post?.author?._id}`} className="min-w-0 flex-1">
       <div className="flex items-center gap-3">
@@ -191,17 +191,17 @@ const Post = ({ post }) => {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-slate-800 bg-white/10 p-3 shadow-2xl shadow-black/50">
+      <DialogContent className="w-[50vw] lg:w-[20dvw] rounded-2xl border border-slate-800 bg-white/10 backdrop-blur-2xl p-3 shadow-2xl shadow-black/50">
         <DialogTitle className="sr-only">Post options</DialogTitle>
 
         <div className="flex flex-col gap-1">
-          <Button onClick={bookmarkHandler} variant="ghost" className="h-11 w-full justify-center rounded-xl font-medium text-white hover:bg-slate-900 cursor-pointer">
-            Add to favorites
+          <Button onClick={bookmarkHandler} variant="ghost" className="h-11 w-full justify-center rounded-xl font-medium text-white hover:bg-black/10 cursor-pointer hover:text-white border border-white/10">
+            <Bookmark/>Add to favorites
           </Button>
 
           {user && user?._id === post?.author?._id && (
-            <Button onClick={deletePostHandler} variant="ghost" className="h-11 w-full justify-center rounded-xl font-medium text-red-500 hover:bg-red-500/10 hover:text-red-400 cursor-pointer">
-              Delete post
+            <Button onClick={deletePostHandler} variant="ghost" className="h-11 w-full justify-center rounded-xl font-medium text-red-500 hover:bg-red-500/10 hover:text-red-400 cursor-pointer border border-white/10">
+              <Trash/> Delete post
             </Button>
           )}
         </div>
