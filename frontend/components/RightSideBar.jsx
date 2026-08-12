@@ -78,7 +78,7 @@ const RightSideBar = () => {
     
         <div className="h-px bg-white/10 mx-5" />
     
-        <div className="px-3 py-3 overflow-y-auto h-[calc(100%-75px)]">
+        <div className="px-3 py-3 overflow-y-hidden h-[calc(100%-50px)]">
           <SuggestedUsers />
         </div>
       </div>
