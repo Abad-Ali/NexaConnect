@@ -155,7 +155,7 @@ const Post = ({ post }) => {
   };
 
   return (
-<div className="w-full max-w-xl lg:max-w-[560px] mx-auto mb-3 overflow-hidden rounded-2xl border border-slate-800 bg-black shadow-lg shadow-black/20 transition-all duration-300 hover:border-slate-700">
+<div className="w-[350px] md:w-full max-w-xl lg:max-w-[560px] mx-auto mb-3 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-lg shadow-black/20 transition-all duration-300 hover:border-slate-700">
   <div className="flex items-center justify-between px-4 py-4 sm:px-5">
     <Link href={`/profile/${post?.author?._id}`} className="min-w-0 flex-1">
       <div className="flex items-center gap-3">
@@ -209,7 +209,7 @@ const Post = ({ post }) => {
     </Dialog>
   </div>
 
-  <div className="relative w-[300px] md:w-[450px] h-[300px] md:h-[450px] overflow-hidden bg-slate-950 flex items-center justify-center aspect-square sm:aspect-[4/5] lg:aspect-[4/5]">
+  <div className="relative w-[350px] md:w-[450px] h-[350px] md:h-[450px] overflow-hidden bg-slate-950 flex items-center justify-center aspect-square sm:aspect-[4/5] lg:aspect-[4/5]">
     <img onDoubleClick={likeOrDislikeHandler} src={post?.image} alt="Post" className="h-full w-full object-cover cursor-pointer transition-transform duration-500 hover:scale-[1.01]" />
   </div>
 
@@ -268,7 +268,7 @@ const Post = ({ post }) => {
           : `View all ${comment.length} comments`}
     </button>
 
-    <div className="mt-4 flex items-center gap-3 border-t border-slate-900 py-3">
+    <div className="mt-4 flex items-center gap-3 border-t border-white/10 py-3">
       <Avatar className="h-8 w-8 shrink-0">
         <AvatarImage src={user?.profilePicture || "/default_pic.jpg"} alt="Your profile" className="object-cover" />
         <AvatarFallback className="bg-slate-800 text-xs">{user?.username?.slice(0, 2).toUpperCase() || "ME"}</AvatarFallback>
