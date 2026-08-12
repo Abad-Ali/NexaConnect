@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import CarouselSuggestedUsers from "@/components/CarouselSuggetedUser";
+import Header from "@/components/Header";
 
 const Search = () => {
   const [isActive, setIsActive] = useState(false);
@@ -35,6 +36,9 @@ const Search = () => {
 
   return (
   <div className="min-h-screen bg-black text-white">
+    <div className="inline md:hidden">
+      <Header/>
+    </div>
     <LeftSideBar />
     <main className="min-h-screen pt-20 pb-24 px-4 sm:px-6 md:pt-10 md:pb-10 md:pl-[calc(30vw+3.5rem)] lg:pl-[calc(22%+3.5rem)] max-w-7xl mx-auto">
       <div className="max-w-6xl mx-auto">
