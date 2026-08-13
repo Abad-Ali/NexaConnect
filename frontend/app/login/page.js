@@ -19,6 +19,7 @@ const Login = () => {
     });
 
     const [loading, setloading] = useState(false);
+    const [Dloading, setDloading] = useState(false);
     const dispatch = useDispatch();
 
     const handleChange = (e)=>{
@@ -58,7 +59,7 @@ const Login = () => {
 
     const demoLoginHandler = async () => {
         try {
-            setloading(true);
+            setDloading(true);
     
             const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v2/user/demo-login`,{},{
                   withCredentials: true
@@ -78,7 +79,7 @@ const Login = () => {
                 error?.response?.data?.message || "Demo login failed"
             );
         } finally {
-            setloading(false);
+            setDloading(false);
         }
     };
 
@@ -115,6 +116,7 @@ const Login = () => {
                    </Button>
                  ) : (
                    <Button
+                     disabled={loading || Dloading} 
                      type="submit"
                      className="bg-blue-600 hover:bg-blue-700 transition-colors duration-200 font-bold font-serif py-2 px-4 rounded-md text-white text-sm sm:text-base mt-2 cursor-pointer"
                    >
@@ -130,8 +132,8 @@ const Login = () => {
                   <div className="h-px bg-gray-600 flex-1"></div>
                 </div>
                 
-                <Button type="button" onClick={demoLoginHandler} disabled={loading} className="bg-gray-900 hover:bg-gray-800 transition-colors duration-200 font-bold font-serif py-2 px-4 rounded-md text-white text-sm sm:text-base cursor-pointer flex items-center justify-center gap-2">
-                    {loading ? (
+                <Button type="button" onClick={demoLoginHandler} disabled={loading || Dloading} className="bg-gray-900 hover:bg-gray-800 transition-colors duration-200 font-bold font-serif py-2 px-4 rounded-md text-white text-sm sm:text-base cursor-pointer flex items-center justify-center gap-2">
+                    {Dloading ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
                           Logging in...
